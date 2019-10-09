@@ -1,0 +1,57 @@
+tools:
+  jdk: 8
+  maven: 3.5.0
+  npm: 5.1.0
+  nodejs: 8.9.0
+
+envs:
+  global:
+    variables:
+      BRANCH_NAME: develop
+      appname: harry-botter
+      organization: mexicoecomm
+      assembly: gr-harry-botter
+      env: ${environment}
+      platform: botter-app
+      repository: pangaea_snapshots
+      groupId: com.walmart.mexico.${env}.{appname}
+
+triggers:
+  - push: disabled
+  - pr: disabled
+
+flows:
+  default:
+    - call: build
+
+  build:
+    - npm install
+    - rm -rf *.zip && rm -rf *.tgz && rm -rf *.tar
+    - rm -rf $WORKSPACE/deploy
+
+    - |
+      mkdir -p $WORKSPACE/deploy/
+      ls -lrt
+      shopt -s extglob
+      cp -R !(deploy) deploy/
+      ls -lrt
+      tar -zcf ${BUILD_NUMBER}_package.tar deploy && ls -lrt && pwd
+
+  nexusuploadsnapshots:
+    - |
+      echo "Uploading artifacts to nexus"
+      mvn -X -e deploy:deploy-file -Durl='http://gec-maven-nexus.walmart.com/nexus/content/repositories/pangaea_snapshots' -DrepositoryId="pangaea_snapshots" -DgroupId="com.walmart.mexico.${env}.${appname}" -DartifactId="${BRANCH_NAME}" -Dversion="1.0.${BUILD_NUMBER}-SNAPSHOT" -Dpackaging=tar -Dfile="${BUILD_NUMBER}_package.tar"
+  deployapps:
+    - oneops.environmentVariableUpdate(organization = '$organization', assembly
+      = '$assembly', environment = '$env', platform = '$platform', component =
+      artifact-app, variables ={ artifactId = '${BRANCH_NAME}', repository =
+      '$repository', appVersion = '1.0.${BUILD_NUMBER}-SNAPSHOT', groupId =
+      '$groupId'})
+    - oneops.environmentCommitAndDeploy(organization = '$organization', assembly
+      = '$assembly', environment = '$env', platform = '$platform',
+      deployAllPlatforms = false )
+
+  Build(ui BuildDeploy):
+    - call: build
+    - call: nexusuploadsnapshots
+    #- call: deployapps

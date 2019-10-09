@@ -1,0 +1,38 @@
+{
+  "name": "harry-botter",
+  "version": "1.0.0",
+  "description": "A universal bot for MX",
+  "main": "index.js",
+  "repository": "https://gecgithub01.walmart.com/MexicoEcomm/harry-botter",
+  "author": "Trung Nguyen",
+  "license": "MIT",
+  "private": null,
+  "dependencies": {
+    "boom": "^7.3.0",
+    "koa": "^2.8.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^7.4.0",
+    "lodash": "^4.17.15",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "2.x",
+    "@typescript-eslint/parser": "2.x",
+    "babel-eslint": "10.x",
+    "eslint": "6.x",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-config-react-app": "^5.0.2",
+    "eslint-plugin-flowtype": "3.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react": "7.x",
+    "eslint-plugin-react-hooks": "1.x",
+    "nodemon": "^1.19.2"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev:watch": "nodemon index.js",
+    "eslint-check": "eslint --print-config path/to/main.js | eslint-config-prettier-check"
+  }
+}
